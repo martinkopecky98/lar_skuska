@@ -17,9 +17,14 @@ class ZaradenieController extends Controller
     public function index()
     {
         
-        $data = DB::select('Select * from zaradenie');
-        
-        return view('zaradenia.zaradenia')->with(["data", $data]);
+        // $data = DB::select('Select * from zaradenie');
+        $data = DB::select('Select users.id users.name, users.email, users.user_zameranie, oddelenie.nazov, oddelenie.veduci from users
+                join zaradenie on users.id = zaradenie.zamestnanec_id
+                join oddelenie on zaradenie.oddelenie_id = oddelenie.id
+        ');
+        dd($data);
+        // return view('zaradenia.zaradenia')->with(["data", $data]);
+        return view('zaradenia.zaradenia', compact('data'));
     }
 
     /**

@@ -23,9 +23,9 @@
                 <li class="nav-item">
                     <a class="nav-link" href="{{ url('/oddelenie')}}">Oddelenia</a>
                 </li>
-                <li class="nav-item">
+                {{-- <li class="nav-item">
                     <a class="nav-link" href="{{ url('/zaradenie')}}">Zaradenia</a>
-                </li>
+                </li> --}}
                 {{-- <li class="nav-item">
                   <a class="nav-link disabled" href="{{ url('/create')}}" tabindex="-1" aria-disabled="true">Vytvor</a>
                 </li> --}}

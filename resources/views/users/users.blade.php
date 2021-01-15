@@ -10,17 +10,22 @@
                 <th>Name</th>
                 <th>Email</th>
                 <th>Zameranie</th>
+                <th>Nazov Projektu</th>
+                <th>Veduci Projektu</th>
             </tr>
         </thead>
         <tbody>
             @foreach ($users as $user)
-                @if ($user->id != 10)
+                {{-- @if ($user->id != 10) --}}
                     <tr>
                         <th>{{$user->id}}</th>
                         <th>{{$user->name}}</th>
                         <th>{{$user->email}}</th>
                         <th>{{$user->user_zameranie}}</th>
-                        <th>                            <br>
+                        <th> <a href="oddelenie/{{$user->oddelenie_id}}/show"> {{$user->nazov}} </a> </th>
+                        <th>{{$user->veduci}}</th>
+                        <th>                            
+                            <br>
                             <button class="btn btn-info btn-mrg"><a  href="users/{{$user->id}}/edit">Upravit</a></button>
                            
                             <div>
@@ -33,7 +38,7 @@
                         </th>
 
                     </tr>
-                @endif
+                {{-- @endif --}}
             @endforeach
         </tbody>
     </table>

@@ -13,18 +13,18 @@
             </tr>
         </thead>
         <tbody>
-            {{dd($oddelenia)}}
+            {{-- {{dd($oddelenia)}} --}}
             @foreach ($oddelenia as $elem)
                 <tr>
-                    <th>{{$elem->id}}</th>
+                    <th>{{$elem->oddelenie_id}}</th>
                     <th>{{$elem->nazov}}</th>
                     <th>{{$elem->veduci}}</th>
                     <th>{{$elem->created_at}}</th>
                     <th>                            <br>
-                        <button class="btn btn-info btn-mrg"><a  href="users/{{$elem->id}}/edit">Upravit</a></button>
+                        <button class="btn btn-info btn-mrg"><a  href="users/{{$elem->oddelenie_id}}/edit">Upravit</a></button>
                         
                         <div>
-                            {!!Form::open(['action'=> ['OddelenieController@destroy', $elem->id], 'method' => 'POST'])!!}
+                            {!!Form::open(['action'=> ['OddelenieController@destroy', $elem->oddelenie_id], 'method' => 'POST'])!!}
                                 {{-- {{Form::hiden('_method','DELETE')}} --}}
                                 @method('DELETE')
                                 {{Form::submit('Delete',['class' => 'btn btn-danger'])}}

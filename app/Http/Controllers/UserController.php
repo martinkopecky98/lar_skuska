@@ -16,7 +16,10 @@ class UserController extends Controller
     public function index()
     {
         //
-        $users = DB::select('Select * from users');
+        // $users = DB::select('Select * from users');
+        $users = DB::select('Select users.id, users.name, users.email, users.user_zameranie, oddelenie.oddelenie_id, oddelenie.nazov, oddelenie.veduci from users
+        join zaradenie on users.id = zaradenie.zamestnanec_id join oddelenie on zaradenie.oddelenie_id = oddelenie.oddelenie_id');
+        // dd($users);
         return view('users.users')->with("users", $users); 
     }
 
