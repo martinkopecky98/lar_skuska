@@ -18,16 +18,18 @@
 
     <!-- Styles -->
     <link href="{{ asset('css/app.css') }}" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.10.23/css/jquery.dataTables.min.css">
 </head>
 <body>
     <div id="app">
-       @include('navbar')
+       @include('shered.navbar')
         <div class="container">
             @yield('content')
             @yield('body')
             
         </div>
-
+        @include('shered.footer')
     </div>
+    <script src="https://cdn.datatables.net/1.10.23/js/jquery.dataTables.min.js"></script>
 </body>
 </html>

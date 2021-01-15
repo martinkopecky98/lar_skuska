@@ -3,12 +3,12 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\Todo;
 use DB;
+use App\Zaradenie;
 
-
-class TodosController extends Controller
+class ZaradenieController extends Controller
 {
+    
     /**
      * Display a listing of the resource.
      *
@@ -17,10 +17,9 @@ class TodosController extends Controller
     public function index()
     {
         
-        $todos = Todo::all();
-        $users = DB::select('Select * from users');
+        $data = DB::select('Select * from zaradenie');
         
-        return view('todos.todo')->with(["todos" => $todos, "users" => $users]);
+        return view('zaradenia.zaradenia')->with(["data", $data]);
     }
 
     /**

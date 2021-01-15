@@ -8,11 +8,14 @@
         {{Form::label('title', 'Title')}}
         {{Form::text('title',$todo->title,[])}}
         <br>
+        {{Form::label('subject', 'Subject')}}
+        {{Form::text('subject',$todo->subject,[])}}        
+        <br>
         {{Form::label('body', 'Text')}}
         {{Form::text('body',$todo->body,[])}}
         <br>
-        {{Form:hidden('_method','PUT')}}
-        {{Form::submit('Potvrdit')}}
+        {{Form::hidden('_method','PUT')}}
+        {{Form::submit('Potvrdit',  ['class' => 'btn btn-info'])}}
     {!!Form::close()!!}
 {{-- 
     <form id='formular_nazov' >

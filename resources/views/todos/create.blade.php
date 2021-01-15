@@ -5,13 +5,16 @@
     <h1>CREATE TODO</h1>
 
     {!! Form::open(['action'=> 'TodosController@store', 'method' => 'POST'])!!}
-        {{Form::label('title', 'Title')}}
-        {{Form::text('title','',[])}}
+        {{Form::label('title', 'Title', ['class' =>'label label-default'])}}
+        {{Form::text('title','',['class' => 'form-control'])}}
+        <br>
+        {{Form::label('subject', 'Subject')}}
+        {{Form::text('subject','',['class' => 'form-control'])}}
         <br>
         {{Form::label('body', 'Text')}}
-        {{Form::text('body','',[])}}
+        {{Form::textarea('body','',['class' => 'form-control'])}}        
         <br>
-        {{Form::submit('Potvrdit')}}
+        {{Form::submit('Potvrdit', ['class' => 'btn btn-info'])}}
     {!!Form::close()!!}
 {{-- 
     <form id='formular_nazov' >

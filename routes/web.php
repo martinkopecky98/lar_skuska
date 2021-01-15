@@ -19,8 +19,12 @@
 Route::get('/', 'PagesController@index');
 Route::get('/todo', 'PagesController@todo');
 Route::get('/create', 'PagesController@create');
+Route::get('/contact', 'PagesController@contact');
 
 Route::resource('todos','TodosController');
+Route::resource('users','UserController');
+Route::resource('oddelenie','OddelenieController');
+Route::resource('zaradenie','ZaradenieController');
 Auth::routes();
 
 Route::get('/home', 'HomeController@index')->name('home');

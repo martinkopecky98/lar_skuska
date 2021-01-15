@@ -14,4 +14,7 @@ class PagesController extends Controller
 
     public function create()
     { return view('create');}
+
+    public function contact()
+    { return view ('shered.contact');}
 }
