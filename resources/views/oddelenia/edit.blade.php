@@ -5,14 +5,18 @@
     {{-- {{dd($oddelenie)}} --}}
     <h1>{{$oddelenie[0]->nazov}}</h1>
     
-    {!! Form::open(['action'=> ['OddelenieController@update', $oddelenie[0]->oddelenie_id], 'method' => 'POST'])!!}
+    {!! Form::open(['action'=> ['OddelenieController@update', $oddelenie[0]->oddelenie_id], 'method' => 'POST', 'id' => 'oddelenieForm'] )!!}
 
         <br>
         {{Form::label('nazov', 'nazov')}} 
-        {{Form::text('nazov',$oddelenie[0]->nazov,['class' => 'form-control'])}}        
+        {{Form::text('nazov',$oddelenie[0]->nazov,['class' => 'form-control'])}}  
+        <p class="text-danger" id='nazovError'></p>
+
         <br>
         {{Form::label('veduci', 'veduci')}} 
         {{Form::text('veduci',$oddelenie[0]->veduci,['class' => 'form-control'])}}
+        <p class="text-danger" id='veducitError'></p>
+
         <br>
         {{-- <li class="list-group">
             @foreach ($oddelenie as user)
@@ -26,6 +30,7 @@
                     <th>Name</th>
                     <th>Email</th>
                     <th>Pozicia</th>
+                    <th>Moznosti</th>
                 </tr>
             </thead>
             <tbody>

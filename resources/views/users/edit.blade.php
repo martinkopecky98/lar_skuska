@@ -90,7 +90,7 @@
             // .post('../ZmenaPozicie')
             .then(function (response) {
                     console.log(response.data);
-                    // history.go(0);
+                    history.go(0);
                 })
             .catch(function (error) {
                 console.log(error);

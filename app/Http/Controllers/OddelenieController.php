@@ -51,6 +51,7 @@ class OddelenieController extends Controller
     public function store(Request $request)
     {
         // najdi ci existuje taky user ak nie vyhod ho z funkcie ak hej musis aj userovi nastavit ze je veduci tohto projektu :(
+        // dd("som v store");
         $veduci = DB::select('select * from users where email = ?',[$request->veduci]);
         // dd($veduci);
         if(!empty($veduci))
@@ -63,10 +64,12 @@ class OddelenieController extends Controller
                 // DB::insert('insert into oddelenia')
                 $oddelenie->save();
                 DB::update('update users set oddelenie_id = ? where email = ?',[$oddelenie->id, $oddelenie->veduci]);
+                return redirect('/oddelenie')->with('success','oddelenie bolo pridane');
+
             }
         }
         
-        return redirect('/oddelenie');
+        return redirect('/oddelenie')->with('error', 'neexistuje taky user alebo uz ma oddelenie');
     }
 
     /**
@@ -119,7 +122,7 @@ class OddelenieController extends Controller
         // );
         // dd($oddelenie);
         // return view('oddelenia.edit', compact($data));
-        return view('oddelenia.edit', )->with('oddelenie', $oddelenie);
+        return view('oddelenia.edit', )->with('oddelenie', $oddelenie)->with('success','oddelenie bolo upravene');
     }
 
     /**
@@ -152,7 +155,7 @@ class OddelenieController extends Controller
                 // $data->delete();
                 DB::delete('delete from oddelenie WHERE oddelenie_id = ?',[$id]);
                 DB::update('update users set oddelenie_id = 0 WHERE oddelenie_id = ?',[$id]);
-                return redirect('/oddelenie');
+                return redirect('/oddelenie')->with('success','oddelenie bolo vymazane');
             }
         }
         return redirect('./')->with('error', 'Neopravneny pristup');
@@ -170,7 +173,7 @@ class OddelenieController extends Controller
 
         // return  redirect("../$project_id/edit"); 
         //  edit($project_id);
-        return $this->edit($project_id);
+        return $this->edit($project_id)->with('success','zamestnanec bod odobraty');
     }
 }
     

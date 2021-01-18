@@ -111,55 +111,36 @@
     }
 </script>
 
-
-
-{{-- <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.21.0/axios.min.js"></script>
-    <script
-        src="https://code.jquery.com/jquery-3.4.1.min.js"
-        integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo="
-        crossorigin="anonymous"></script>
-        <script type="module">
-        $(document).ready(function(){
-            axios.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
-            axios.defaults.headers.common['X-CSRF-TOKEN'] = $('meta[name="csrf-token"]').attr('content');
-            $('#formular').submit(function(e){
-                e.preventDefault();
-                var data = new FormData()
-                data.set("text", e.target.childNodes[1].value)
-                data.set("_token", "{{ csrf_token() }}")
-                
-               axios.get("http://localhost:8080/lar_skuska/public/todos/storeJS")
-               .then(function (response) {
-                        console.log(response.data);
-                        vypis(response.data)
-                    })
-                    .catch(function (error) {
-                        console.log(error);
-                })
-            //    axios.post("http://localhost:8080/lar_skuska/public/todos/storeJS", data)
-            //    .then(function (response) {
-            //             console.log(response.data);
-            //             vypis(response.data)
-            //         })
-            //         .catch(function (error) {
-            //             console.log(error);
-            //     })
-            });
-
-            function vypis(pole){
-                var polee = '';
-                for (let index = 0; index < pole.length; index++) {
-                    //console.log(som tu);
-                    polee += /*"<li> <a class="btn" href="./contact">Vymazat</a>*/ "<li>" + pole[index].text +"</li>"+
-                    "<a class='btn' href='{{ url('todos/')}}/"+pole[index].id+"/delete'>Vymazat</a>";
-                    "<a class='btn' href='{{ url('todos/') }}/"+pole[index].id+"/edit'>Upravit</a>";
-                    // "<a class='btn' href='{{ url('todo/delete/') }}/"+pole[index].id+"'>Vymazat</a>";
-                    // "<a class='btn' href='{{ url('todo/edit/') }}/"+pole[index].id+"'>Upravit</a>";
-                    //console.log(uz tu niesom);
-                }
-                $('#vypis').html(polee);
+<script>
+    $(document).ready( function () {
+    $('#oddelenieForm').submit(function(event)
+        {
+            event.preventDefault();
+            var nazov = $('#oddelenieForm').find('input[name="nazov"]').val();
+            var veduci = $('#oddelenieForm').find('input[name="veduci"]').val();
+            // console.log(title, subject, body);
+            // console.log('prevent default');
+            if(!kontrola(nazov) && !kontrola(veduci) )
+            {
+                console.log('presslo kontrolou jeje');   
+                $('#oddelenieForm').get(0).submit();
+                // $('#todoForm').submit();
+                // podm = false;
+            } else 
+            {
+                console.log("nepreslo kontrolou :(");
+                var nazovError = kontrola(nazov) ? "chyba ti nazov oddelenia" : " ";
+                var veducitError = kontrola(veduci) ? "chyba ti veduci oddelenia" : " ";
+                $('#nazovError').html(nazovError);
+                $('#veducitError').html(veducitError);
             }
-            
-        });
-    </script>  --}}
+        })
+    });
+    function kontrola(data)
+    {
+        return data == undefined || data.length == 0;
+    }
+</script>
+
+
 </html>

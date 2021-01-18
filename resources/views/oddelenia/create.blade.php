@@ -4,12 +4,15 @@
     <a href="./" class="btn btn-default">Naspat</a>
     <h1>Vytvaranie Oddelenia</h1>
 
-    {!! Form::open(['action'=> 'OddelenieController@store', 'method' => 'POST'])!!}
+    {!! Form::open(['action'=> 'OddelenieController@store', 'method' => 'POST', 'id' => 'oddelenieForm'])!!}
         {{Form::label('nazov', 'nazov oddelenia', ['class' =>'label label-default'])}}
         {{Form::text('nazov','',['class' => 'form-control'])}}
+        <p class="text-danger" id='nazovError'></p>
         <br>
         {{Form::label('veduci', 'veduci oddelenia')}}
         {{Form::text('veduci','',['class' => 'form-control'])}}        
+        <p class="text-danger" id='veducitError'></p>
+
         <br>
         {{Form::submit('Potvrdit', ['class' => 'btn btn-info'])}}
     {!!Form::close()!!}
