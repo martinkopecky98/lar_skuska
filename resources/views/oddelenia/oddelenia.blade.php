@@ -2,7 +2,7 @@
 @section('body')
     <div class="card-header ">Oddelenia</div>
 
-    <a class="btn btn-primary form-control" href="{{ url('/register')}}" tabindex="-1" aria-disabled="true">Vytvor</a>
+    <a class="btn btn-primary form-control" href={{ url('/oddelenie/create')}} tabindex="-1" aria-disabled="true">Vytvor</a>
     <table id="DT_load" class="table table-bordered ">
         <thead>
             <tr>
@@ -10,6 +10,8 @@
                 <th>Name</th>
                 <th>Veduci</th>
                 <th>Vyrobene</th>
+                <th>Moznosti</th>
+
             </tr>
         </thead>
         <tbody>
@@ -17,7 +19,8 @@
             @foreach ($oddelenia as $elem)
                 <tr>
                     <th>{{$elem->oddelenie_id}}</th>
-                    <th>{{$elem->nazov}}</th>
+                    {{-- <th>{{$elem->nazov}}</th> --}}
+                    <th> <a href="oddelenie/{{$elem->oddelenie_id}}/edit"> {{$elem->nazov}} </a> </th>
                     <th>{{$elem->veduci}}</th>
                     <th>{{$elem->created_at}}</th>
                     <th>                            <br>

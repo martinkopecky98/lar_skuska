@@ -1,4 +1,6 @@
-
+<div> 
+    <img style="w-100" src="http://localhost:8080/lar_skuska/public/storage/images/Capture.JPG">
+  </div>
   <nav class="navbar navbar-expand-md navbar-light bg-white shadow-sm">
     <div class="container">
         <a class="navbar-brand" href="{{ url('/') }}">
@@ -15,14 +17,18 @@
                    <a class="nav-link" href="{{url('/')}}">HomePAGE</a> <span class="sr-only">(current)</span> </a>
                 </li> --}}
                 <li class="nav-item">
-                  <a class="nav-link" href="{{ url('/todos')}}">TO_DO</a>
+                    <a class="nav-link" href="{{ url('/oddelenie')}}">Oddelenia</a>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link" href="{{ url('/users')}}">Zamestnanci</a>
                 </li>
+                
                 <li class="nav-item">
-                    <a class="nav-link" href="{{ url('/oddelenie')}}">Oddelenia</a>
-                </li>
+                    <a class="nav-link" href="{{ url('/todos')}}">TO_DO</a>
+                  </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{{ url('/posts')}}"> posts</a>
+                  </li>
                 {{-- <li class="nav-item">
                     <a class="nav-link" href="{{ url('/zaradenie')}}">Zaradenia</a>
                 </li> --}}
@@ -62,7 +68,7 @@
                         @csrf
                     </form>
                     
-                    <a class="dropdown-item" href="{{ url('/profil')}}"
+                    <a class="dropdown-item" href="users/{{auth()->user()->id}}/edit"
                     {{-- onclick="event.preventDefault();
                                 document.getElementById('logout-form').submit();"> --}}
                     >Profil

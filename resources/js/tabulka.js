@@ -1,5 +1,5 @@
 var dataTable;
-
+console.log('tabulkaa js script');
 $(document).ready(function(){   
     loadDataTable();
 });

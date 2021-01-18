@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 class Oddelenie extends Model
 {
 
-    protected $table = 'oddelenia';
+    protected $table = 'oddelenie';
 
     public $primaryKey = 'id';
 

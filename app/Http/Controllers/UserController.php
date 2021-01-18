@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\User;
 use DB;
+use Auth;
 
 class UserController extends Controller
 {
@@ -17,10 +18,24 @@ class UserController extends Controller
     {
         //
         // $users = DB::select('Select * from users');
-        $users = DB::select('Select users.id, users.name, users.email, users.user_zameranie, oddelenie.oddelenie_id, oddelenie.nazov, oddelenie.veduci from users
-        join zaradenie on users.id = zaradenie.zamestnanec_id join oddelenie on zaradenie.oddelenie_id = oddelenie.oddelenie_id');
+        // users.id, users.name, users.pozicia, users.email, users.user_zameranie, oddelenie.oddelenie_id, oddelenie.nazov, oddelenie.veduci
+        
+        // $users = DB::select('Select users.id, users.name, users.pozicia, users.email, users.user_zameranie, oddelenie.oddelenie_id, oddelenie.nazov, oddelenie.veduci 
+        // from users join oddelenie on users.oddelenie_id = oddelenie.oddelenie_id');
+
+        $users = DB::select('Select * from users');
+        $projekty = DB::select('Select * from zaradenie join oddelenie on zaradenie.oddelenie_id = oddelenie.oddelenie_id');
+        $projekty = DB::select('Select * from oddelenie');
+        // $data = array(
+        //     'users' => $users,
+        //     'projekty' => $projekty
+        // );
+        // dd(compact('users', 'projekty'));
         // dd($users);
-        return view('users.users')->with("users", $users); 
+        
+        // return view('users.users')->with("users", $users); 
+
+        return view('users.users', compact('users','projekty')); 
     }
 
     /**
@@ -74,8 +89,35 @@ class UserController extends Controller
      */
     public function edit($id)
     {
-        $user = User::find($id);
-        return view('users.edit')->with('user', $user);
+        if (!Auth::check()) {
+            return redirect('users');
+        }
+
+        if(auth()->user()->pozicia == 'root' OR auth()->user()->pozicia == 'manazer')
+        {
+            // $user = User::find($id);
+            $user = DB::select('Select * from users join oddelenie on users.oddelenie_id = oddelenie.oddelenie_id where users.id = ?', [$id]);
+           
+            // $user = DB::select('Select * from users join oddelenie on users.oddelenie_id = oddelenie.oddelenie_id 
+            // join todos on todos.user_id = users.id where users.id = ?', [$id]);
+            // if(empty($user)){       //ak nema ziadne oddelenie
+            //     $user = DB::select('Select * from users join on todos.user_id = users.id where user.id = ?', [$id]);
+            
+            if(empty($user))
+                {   // ak nema ani ziadne todo
+                    $user = DB::select('Select * from users where id = ?', [$id]);
+                }
+           
+                // }
+            $todos = DB::select('Select * from todos where user_id = ?', [$id]);
+            // dd($user[0]->id);
+            // dd($todos);
+
+            return view('users.edit')->with('user', $user[0])->with('todos', $todos);
+
+            // return view('users.edit', compact($user[0], $todos));
+        }
+        return redirect('todos');
     }
 
     /**
@@ -88,21 +130,20 @@ class UserController extends Controller
     public function update(Request $request, $id)
     {
         // treba doplnit overovanie ci som to naozaj ja !!!
-        // if (auth()->user()->name == "null")
-        // {
-        //     return redirect('./')->with('error', 'Neopravneny pristup');
-        // }
-        // if(auth()->user()->user_zameranie != 0 OR auth()->user()->id != $id)
-        // {
-        //     // if($todo->user_id !== auth()->user()->id){
-        //         return redirect('./')->with('error', 'Neopravneny pristup');
-        //     // }
-        // }
-        
+
+        $oddelenie = DB::select('Select * from oddelenie where veduci = ?',[$request->veduci]);
+        $user = DB::select('Select * from users where id = ?', [$id]);
+
+        // dd($oddelenie);
+        // dd($request);
+
         $user = User::find($id);
         $user->name = $request->name;
         $user->email = $request->email;
-        $user->user_zameranie = $request->zameranie;
+        if($request->veduci == 'none') {$user->oddelenie_id = 0;}
+        else {$user->oddelenie_id = $oddelenie[0]->oddelenie_id;}
+        // $user->oddelenie_id = $oddelenie[0]->oddelenie_id;
+        $user->pozicia = $request->pozicia;
         // $todo->subject = $request->subject;
         $user->save();
         return redirect('/users');
@@ -116,12 +157,42 @@ class UserController extends Controller
      */
     public function destroy($id)
     {
+        if(!Auth::check()) { return redirect('/users')->with('error', 'Neprihlaseny pouzivatel'); }
         $data = User::find($id);
-        // if(auth()->user()->user_zameranie != 0)
-        // {
-        //     return redirect('/users')->with('error', 'Neopravneny pristup');
-        // }
-        $data->delete();
-        return redirect('/users');
+        if(auth()->user()->pozicia == 'root' OR auth()->user()->pozicia == 'manazer')
+        {
+            $data->delete();
+            DB::delete('delete from todos where user_id = ?', [$data->id]);
+            return redirect('/users')->with('succes', 'Pouzivatel bol odstraneny');
+        }
+        return redirect('/users')->with('error', 'Neopravneny pristup');
+        
+    }
+
+    public function zmenaPozicie(Request $request)
+    // public function zmenaPozicie()
+    {
+        // dd('zmena pozicieeeee backednd');
+        // return('zmena pozicieeeee backednd');
+        // dd($request);
+        // return($request->params);
+        if(!Auth::check()) { 
+            return('zmena pozicieeeee backend neprihlaseny user');
+
+            return redirect('/users')->with('error', 'Neprihlaseny pouzivatel'); 
+        }
+        $user = User::find($request->params);
+        $zmena = False;
+        // return('zmena pozicieeeee backednd');
+
+        if ($user->pozicia == 'none' and $zmena == FALSE) {$user->pozicia = 'manazer'; $zmena = TRUE;}
+        if ($user->pozicia == 'tester' and $zmena == FALSE) {$user->pozicia = 'none'; $zmena = TRUE;}
+        if ($user->pozicia == 'developer' and $zmena == FALSE) {$user->pozicia = 'tester'; $zmena = TRUE;}
+        if ($user->pozicia == 'manazer' and $zmena == FALSE) {$user->pozicia = 'developer'; $zmena = TRUE;}
+        // if ($user->pozicia == 'root' and $zmena == FALSE) {$user->pozicia = 'manazer'; $zmena = TRUE;}
+        // return('zmena pozicieeeee backednd vytiahnutie a prepisanie');
+        $user->save();
+        return($user->pozicia);
+        return redirect('/users')->with('succes','pozicia zmenena');
     }
 }

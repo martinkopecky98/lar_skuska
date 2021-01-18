@@ -23,52 +23,64 @@
 
     <a class="btn btn-primary  " href="{{ url('/todos/create')}}" tabindex="-1" aria-disabled="true">Vytvor</a>
   
-    {{-- @if(count($todos) > 1) --}}
+    @if(count($todos) > 0)
+    <div class="list-group">
         <ul class="list-group">
-        @foreach ($todos as $todo)
-            <li class="list-group-item">
-                <div class="panel panel-default">
-                        <div class="panel-heading">
-                            <br>
-                            <h3>{{$todo->title}}</h3>
-                            <h4>{{$todo->subject}}</h4>
-                        </div>
-
-                        <div class="panel-body">
-                            <p>{{$todo->body}}</p>
-                            <small>{{$todo->created_at}}</small>
-                            @foreach ($users as $user)
-                            @if ($user->id == $todo->user_id)
+            @foreach ($todos as $todo)
+                <li class="list-group-item">
+                    <div class="panel panel-default">
+                            <div class="panel-heading">
                                 <br>
-                                <small>{{$user->email}}</small>
-                            @endif
-
-                            {{-- @php
-                                if( $user->id == $todo->user_id)
-                                {
-                                <small>$user->email</small>
-                                }
+                                {{-- <h3>{{$todo->title}}</h3> --}}
+                                <h4> <b> Projekt na ktorom pracuje :</b>   {{$todo->subject}}</h4>
+                            </div>
+    
+                            <div class="panel-body">
+                                <p><b> Uloha na ktorej pracuje : </b>{{$todo->body}}</p>
+                                <p><b> Stav: </b>{{$todo->progres}}</p>
+                                <small><b> Zacal pracovat : </b>{{$todo->created_at}}</small>
+                                <small><b>Naposledy spravil update:</b> {{$todo->updated_at}}</small>
+                                <br>
+                                <button class="btn btn-info"><a  href="todos/{{$todo->todo_id}}/edit">Upravit</a></button>
                                 
-                            @endphp --}}
-                                
-                            @endforeach
+                                {{-- {!!Form::open(['action'=> ['TodosController@destroy', $todo->todo_id], 'method' => 'POST'])!!}
+                                    @method('DELETE')
+                                    {{Form::submit('Delete',['class' => 'btn btn-danger'])}}
+                                {!!Form::close()!!} --}}
+                                <button class="btn btn-danger" id="delete_todo" onclick="delete_todo({{$todo->todo_id}})">Vymazat Todo</button>
 
-                            <br>
-                            <button class="btn btn-info"><a  href="todos/{{$todo->id}}/edit">Upravit</a></button>
+                                <br>
+                                
+                                <script>
+                                    function delete_todo(index)
+                                    {
+                                        console.log("delete todo funcia");
+                                        console.log(index);
+                                        axios
+                                        // .post('http://localhost:8080/lar_skuska/public/todos/DeleteJS',{params: index})
+                                        .delete('http://localhost:8080/lar_skuska/public/todos/'+index+'/DeleteJS')
+                                        // .delete('http://localhost:8080/lar_skuska/public/todos/DeleteJS', {params: index})
+                                        // .get('http://localhost:8080/lar_skuska/public/users/ZmenaPozicie')
+                                        // .post('../ZmenaPozicie')
+                                        .then(function (response) {
+                                                console.log(response.data);
+                                                history.go(0);
+                                            })
+                                        .catch(function (error) {
+                                            console.log(error);
+                                        })
+                                    }
                             
-                            <br>
-                            {!!Form::open(['action'=> ['TodosController@destroy', $todo->id], 'method' => 'POST'])!!}
-                                {{-- {{Form::hiden('_method','DELETE')}} --}}
-                                @method('DELETE')
-                                {{Form::submit('Delete',['class' => 'btn btn-danger'])}}
-                            {!!Form::close()!!}
-                            <br>
+                                    // document.getElementById('zmena_pozicie').addEventListener('click', zmena_pozicie);
+                                </script>
+                                
+                        </div>
                     </div>
-                </div>
-           </li>
-        @endforeach
-    </ul>
-    {{-- @else
+               </li>
+            @endforeach
+        </ul>
+    </div>
+    @else
         <p>Ziadne veci na pracu</p>
-    @endif --}}
+    @endif
 @endsection

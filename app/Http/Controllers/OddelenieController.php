@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 
 use DB;
 use App\Oddelenie;
+use Auth;
 
 class OddelenieController extends Controller
 {
@@ -21,7 +22,7 @@ class OddelenieController extends Controller
         
         $oddelenia = DB::select('Select * from oddelenie');
         // $data = Oddelenie::all();
-        // dd($data);
+        // dd($oddelenia);
         // return view('oddelenia.oddelenia')->with(["oddelenia", $oddelenia]);
         return view('oddelenia.oddelenia', compact('oddelenia'));
     }
@@ -33,7 +34,12 @@ class OddelenieController extends Controller
      */
     public function create()
     {
-        return view('todos.create');
+        if (!Auth::check()) {
+            return redirect('/');
+        }
+        if(auth()->user()->pozicia == 'manazer' OR auth()->user()->pozicia == 'root')
+        {return view('oddelenia.create');}
+        return redirect('/');
     }
 
     /**
@@ -44,13 +50,23 @@ class OddelenieController extends Controller
      */
     public function store(Request $request)
     {
-        $todo = new Todo;
-        $todo->title = $request->input('title');
-        $todo->body = $request->input('body');
-        $todo->user_id = auth()->user()->id;
-        $todo->subject = $request->input('subject');
-        $todo->save();
-        return redirect('/todos');
+        // najdi ci existuje taky user ak nie vyhod ho z funkcie ak hej musis aj userovi nastavit ze je veduci tohto projektu :(
+        $veduci = DB::select('select * from users where email = ?',[$request->veduci]);
+        // dd($veduci);
+        if(!empty($veduci))
+        {
+            if( $veduci[0]->oddelenie_id == 0)
+            {
+                $oddelenie = new Oddelenie;
+                $oddelenie->nazov = $request->input('nazov');
+                $oddelenie->veduci = $request->input('veduci');
+                // DB::insert('insert into oddelenia')
+                $oddelenie->save();
+                DB::update('update users set oddelenie_id = ? where email = ?',[$oddelenie->id, $oddelenie->veduci]);
+            }
+        }
+        
+        return redirect('/oddelenie');
     }
 
     /**
@@ -61,9 +77,14 @@ class OddelenieController extends Controller
      */
     public function show($id)
     {
-        return "dobra cesta ";
-        $oddelenie =  Oddelenie::find($id);
-        return $oddelenie;
+        // dd($id);
+
+        // return "dobra cesta ";
+        $oddelenie = DB::select('Select * from oddelenie where oddelenie_id = ?', [$id]);
+        // dd($oddelenie);
+
+        // $oddelenie = DB::select('Select * from cars where car_id = id');
+        return view('oddelenia.oddelenie', compact($oddelenie));
     }
 
     /**
@@ -73,10 +94,32 @@ class OddelenieController extends Controller
      * @return \Illuminate\Http\Response
      */
     public function edit($id)
-    {
-        $todo = Todo::find($id);
-        return view('todos.edit')->with('todo', $todo);
-        
+    { 
+
+        // $oddelenie = DB::select('Select * from oddelenie where oddelenie_id = ?', [$id]);
+        // $data = DB::select('Select users.id, users.name, users.email, users.user_zameranie, oddelenie.oddelenie_id, oddelenie.nazov, oddelenie.veduci from users
+        // join zaradenie on users.id = zaradenie.zamestnanec_id join oddelenie on zaradenie.oddelenie_id = oddelenie.oddelenie_id
+        // where oddelenie_id = ?', [$id]);
+        // $car = DB::select('Select * from  where car_id = ?', [$id]);
+        $index= '0';
+        if(is_string($id))
+            {$index = $id;}
+        else{$index = $id[0]->oddelenie_id;}
+        // dd($index);
+        // $oddelenie = DB::select('Select users.id, users.name, users.email, users.pozicia, oddelenie.oddelenie_id, oddelenie.nazov, oddelenie.veduci from users
+        //  join zaradenie on users.id = zaradenie.zamestnanec_id join oddelenie on zaradenie.oddelenie_id = oddelenie.oddelenie_id 
+        //  where oddelenie.oddelenie_id = ?', [$index]);
+        $oddelenie = DB::select('Select * from users
+         join oddelenie on users.oddelenie_id =  oddelenie.oddelenie_id 
+         where oddelenie.oddelenie_id = ?', [$index]);
+        // $data = array(
+        //     'hovno' => 'hovnooooo',
+        //     'oddelenie' => $oddelenie,
+        //     'zamestnanci' => $zamestnanci
+        // );
+        // dd($oddelenie);
+        // return view('oddelenia.edit', compact($data));
+        return view('oddelenia.edit', )->with('oddelenie', $oddelenie);
     }
 
     /**
@@ -88,19 +131,7 @@ class OddelenieController extends Controller
      */
     public function update(Request $request, $id)
     {
-        $todo = Todo::find($id);
-        if(auth()->user()->id != 10)
-        {
-            if($todo->user_id !== auth()->user()->id){
-                return redirect('./')->with('error', 'Neopravneny pristup');
-            }
-        }
-        $todo = Todo::find($id);
-        $todo->title = $request->title;
-        $todo->subject = $request->subject;
-        $todo->body = $request->input('body');
-        // $todo->subject = $request->subject;
-        $todo->save();
+
         return redirect('/todos');
     }
 
@@ -112,15 +143,34 @@ class OddelenieController extends Controller
      */
     public function destroy($id)
     {
-        $data = Todo::find($id);
-        if(auth()->user()->id != 10)
+        // $data = Oddelenie::find($id);
+        // $data = DB::select('select * from oddelenie where oddelenie_id = ?',[$id]);
+        if(Auth::check())
         {
-            if($todo->user_id !== auth()->user()->id){
-                return redirect('./')->with('error', 'Neopravneny pristup');
+            if(auth()->user()->pozicia == 'root' OR auth()->user()->pozicia == 'manazer' )
+            {
+                // $data->delete();
+                DB::delete('delete from oddelenie WHERE oddelenie_id = ?',[$id]);
+                DB::update('update users set oddelenie_id = 0 WHERE oddelenie_id = ?',[$id]);
+                return redirect('/oddelenie');
             }
         }
-        $data->delete();
-        return redirect('/todos');
+        return redirect('./')->with('error', 'Neopravneny pristup');
+       
+    }
+
+    public function removeUser($id)
+    {
+        
+        $project_id = DB::select('Select oddelenie_id from zaradenie where zamestnanec_id = ?',[$id]);
+        // dd($project_id);
+        // dd('removeUser');
+
+        // DB::delete('Delete from zaradenie where zamestnanec_id = ?',[$id]);
+
+        // return  redirect("../$project_id/edit"); 
+        //  edit($project_id);
+        return $this->edit($project_id);
     }
 }
     

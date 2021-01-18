@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Todo;
+use Auth;
 use DB;
 
 
@@ -17,10 +18,16 @@ class TodosController extends Controller
     public function index()
     {
         
-        $todos = Todo::all();
-        $users = DB::select('Select * from users');
-        
-        return view('todos.todo')->with(["todos" => $todos, "users" => $users]);
+        if (!Auth::check()) {
+            return redirect('/');
+        }
+        // dd(auth()->user()->id);
+        // $todos = Todo::all();
+        $todos = DB::select('Select * from users join todos on users.id = todos.user_id
+         where users.id = ?',[auth()->user()->id]);
+        // dd($todos);
+        return view('todos.todo')->with("todos" , $todos);
+        // return view('todos.todo')->with(["todos" => $todos, "users" => $users]);
     }
 
     /**
@@ -47,8 +54,10 @@ class TodosController extends Controller
         $todo->user_id = auth()->user()->id;
         $todo->subject = $request->input('subject');
         $todo->save();
-        return redirect('/todos');
+        return redirect('/todos')->with('success', 'Prvok bol ulozeny');
     }
+
+
 
     /**
      * Display the specified resource.
@@ -70,8 +79,12 @@ class TodosController extends Controller
      */
     public function edit($id)
     {
-        $todo = Todo::find($id);
-        return view('todos.edit')->with('todo', $todo);
+        // $todo = Todo::find($id);
+        // dd($id);
+        $todo = DB::select('Select * from todos where todo_id = ?',[$id]);
+        // dd($id);
+
+        return view('todos.edit')->with('todo', $todo[0]);
         
     }
 
@@ -84,20 +97,24 @@ class TodosController extends Controller
      */
     public function update(Request $request, $id)
     {
-        $todo = Todo::find($id);
-        if(auth()->user()->id != 10)
+        // $todo = Todo::find($id);
+        $todo = DB::select('select * from todos where todo_id = ?',[$id]);
+        if(auth()->user()->pozicia != 'root')
         {
-            if($todo->user_id !== auth()->user()->id){
+            if($todo[0]->user_id !== auth()->user()->id){
                 return redirect('./')->with('error', 'Neopravneny pristup');
             }
         }
-        $todo = Todo::find($id);
-        $todo->title = $request->title;
-        $todo->subject = $request->subject;
-        $todo->body = $request->input('body');
+        // $todo = Todo::find($id);
+        $todo[0]->title = $request->title;
+        $todo[0]->subject = $request->subject;
+        $todo[0]->body = $request->input('body');
         // $todo->subject = $request->subject;
-        $todo->save();
-        return redirect('/todos');
+        // $todo->save();
+        DB::update('update todos set title = ?, subject = ?, body = ? where todo_id = ?',
+                    [$todo[0]->title, $todo[0]->subject, $todo[0]->body, $todo[0]->todo_id ]);
+        
+        return redirect('/todos')->with('success', 'Prvok bol upraveny');
     }
 
     /**
@@ -108,14 +125,68 @@ class TodosController extends Controller
      */
     public function destroy($id)
     {
-        $data = Todo::find($id);
-        if(auth()->user()->id != 10)
+        $data = DB::select('select * from todos where todo_id = ?',[$id]);
+        // dd('som tuuuu');
+
+        if(!Auth::check()) {return redirect('./');}
+        if(auth()->user()->pozicia != 'root')
         {
-            if($todo->user_id !== auth()->user()->id){
+            if($data[0]->user_id != auth()->user()->id){
                 return redirect('./')->with('error', 'Neopravneny pristup');
             }
         }
-        $data->delete();
-        return redirect('/todos');
+        DB::delete('delete from todos where todo_id = ?',[$data[0]->todo_id]);
+        // $data->delete();
+        return redirect('/todos')->with('success', 'Prvok bol odstraneny');
+    }
+    public function storeJS(){
+        dd("todos storeJS");
+        $data = request()->validate([
+            "text" => "required"
+        ]);
+        Auth::user()->todos()->create($data);
+        return Auth::user()->todos;
+    }
+
+    public function DeleteJS($id)
+    // public function DeleteJS(Request $request)
+    {
+        // return('controller delete js');
+        // $todo = Todo::find($request->params);
+        // $todo.delete();
+        // return($id);
+
+        // DB:delete('delete from todos where todo_id = ?',[$request->params]);
+        DB::delete('delete from todos where todo_id = ?',[$id]);
+        // $todo = Todo::where('todo_id', $id)->first()->delete();
+
+        return('todo bolo vymazane');
+    }
+
+    public function zmenaProgresu(Request $request)
+    // public function DeleteJS(Request $request)
+    {
+        // return('controller delete js');
+        // $todo = Todo::find($request->params);
+        // $todo.delete();
+        // return($request->params);
+
+        if(!Auth::check()) { 
+            return('zmena progresu backend neprihlaseny user');
+
+            return redirect('/todos')->with('error', 'Neprihlaseny pouzivatel'); 
+        }
+        $todo = DB::select('select * from todos where todo_id = ?',[$request->params]);
+        $zmena = False;
+        // return($todo);
+        // return('zmena progresu backednd');
+
+        if ($todo[0]->progres == 'zacate' and $zmena == FALSE) {$todo[0]->progres = 'prebiehajuce'; $zmena = TRUE;}
+        if ($todo[0]->progres == 'prebiehajuce' and $zmena == FALSE) {$todo[0]->progres = 'dokoncene'; $zmena = TRUE;}
+        if ($todo[0]->progres == 'dokoncene' and $zmena == FALSE) {$todo[0]->progres = 'zacate'; $zmena = TRUE;}
+        // return('zmena progresu backednd vytiahnutie a prepisanie');
+        DB::update('update todos set progres = ? where todo_id = ?',[$todo[0]->progres, $todo[0]->todo_id]);
+        return('uspesne update todo progres');
+        
     }
 }

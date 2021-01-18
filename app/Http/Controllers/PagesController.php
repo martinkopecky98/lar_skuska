@@ -14,6 +14,12 @@ class PagesController extends Controller
 
     public function create()
     { return view('create');}
+    
+    public function zamestnanci()
+    { return view('users');}
+    
+    public function Oddelenia()
+    { return view('oddelenia');}
 
     public function contact()
     { return view ('shered.contact');}
