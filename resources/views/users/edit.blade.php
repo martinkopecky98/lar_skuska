@@ -4,37 +4,51 @@
     <a href="../" class="btn btn-info">Naspat</a>
     <h1>Uprava Zanestnanca</h1>
     {{-- {{dd($user)}} --}}
-    {!! Form::open(['action'=> ['UserController@update', $user->id], 'method' => 'POST'])!!}
+    {!! Form::open(['action'=> ['UserController@update', $user->id], 'method' => 'POST','id' => 'usersForm'])!!}
 
         {{Form::label('name', 'name', ['class' =>'label label-default'])}}
         {{Form::text('name', $user->name,['class' => 'form-control'])}}
+        <p class="text-danger" id='titleError'></p>
+
         <br>
         {{Form::label('email', 'email')}}
         {{Form::text('email', $user->email,['class' => 'form-control'])}}
+        <p class="text-danger" id='subjectError'></p>
+
         <br>
 
         @if ($user->oddelenie_id == 0) 
         
             {{Form::label('oddelenie', 'oddelenie')}} 
             {{Form::label('oddelenie', 'None')}} 
+        {{-- <p class="text-danger" id='titleError'></p> --}}
+
             <br>
             {{Form::label('veduci', 'veduci')}}
             {{Form::text('veduci', 'none',['class' => 'form-control'])}}
+        <p class="text-danger" id='veduciError'></p>
+
         
         @else   
              {{-- {{dd($user)}} --}}
         
             {{Form::label('oddelenie', 'oddelenie')}} 
             {{Form::label('oddelenie', $user->nazov)}} 
+        {{-- <p class="text-danger" id='titleError'></p> --}}
+
             <br>
             {{Form::label('veduci', 'veduci')}}
             {{Form::text('veduci', $user->veduci,['class' => 'form-control'])}}
+        <p class="text-danger" id='veduciError'></p>
+
         
         @endif
         
         <br>
         {{Form::label('pozicia', 'pozicia')}}
         {{Form::text('pozicia', $user->pozicia,['class' => 'form-control'])}}
+        <p class="text-danger" id='poziciaError'></p>
+
         <br>
         {{Form::hidden('_method','PUT')}}
         {{Form::submit('Zmenit', ['class' => 'btn btn-info'])}}
@@ -57,6 +71,8 @@
                                 <p><b> Uloha na ktorej pracuje : </b>{{$todo->body}}</p>
                                 <small><b> Zacal pracovat : </b>{{$todo->created_at}}</small>
                                 <small><b>Naposledy spravil update:</b> {{$todo->updated_at}}</small>
+                                <br>
+                                <small><b>Progres:</b> {{$todo->progres}}</small>
                                 <br>
                                 {{-- <button class="btn btn-info"><a  href="todos/{{$todo->id}}/edit">Upravit</a></button>
                                 

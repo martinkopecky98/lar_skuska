@@ -19,12 +19,12 @@ class TodosController extends Controller
     {
         
         if (!Auth::check()) {
-            return redirect('/');
+            return redirect('/')->with('error', 'Neprihlaseny user');
         }
         // dd(auth()->user()->id);
         // $todos = Todo::all();
         $todos = DB::select('Select * from users join todos on users.id = todos.user_id
-         where users.id = ?',[auth()->user()->id]);
+         where users.id = ? order by todos.progres DESC',[auth()->user()->id]);
         // dd($todos);
         return view('todos.todo')->with("todos" , $todos);
         // return view('todos.todo')->with(["todos" => $todos, "users" => $users]);
@@ -128,7 +128,7 @@ class TodosController extends Controller
         $data = DB::select('select * from todos where todo_id = ?',[$id]);
         // dd('som tuuuu');
 
-        if(!Auth::check()) {return redirect('./');}
+        if(!Auth::check()) {return redirect('./')->with('error', 'Neprihlaseny user');}
         if(auth()->user()->pozicia != 'root')
         {
             if($data[0]->user_id != auth()->user()->id){

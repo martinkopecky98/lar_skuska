@@ -109,7 +109,7 @@ class UserController extends Controller
                 }
            
                 // }
-            $todos = DB::select('Select * from todos where user_id = ?', [$id]);
+            $todos = DB::select('Select * from todos where user_id = ? order by progres DESC', [$id]);
             // dd($user[0]->id);
             // dd($todos);
 

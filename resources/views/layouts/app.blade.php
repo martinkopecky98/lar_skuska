@@ -76,6 +76,7 @@
 <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
 <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
 
+{{-- validacia todos --}}
 <script>
     $(document).ready( function () {
     $('#todoForm').submit(function(event)
@@ -110,7 +111,7 @@
         return data == undefined || data.length == 0;
     }
 </script>
-
+{{-- validacia oddelenia --}}
 <script>
     $(document).ready( function () {
     $('#oddelenieForm').submit(function(event)
@@ -141,6 +142,45 @@
         return data == undefined || data.length == 0;
     }
 </script>
-
-
+{{-- validacia users --}}
+<script>
+    $(document).ready( function () {
+    $('#usersForm').submit(function(event)
+        {
+            event.preventDefault();
+            var name = $('#usersForm').find('input[name="name"]').val();
+            var email = $('#usersForm').find('input[name="email"]').val();
+            // var oddelenie = $('#usersForm').find('input[name="oddelenie"]').val();
+            var veduci = $('#usersForm').find('input[name="veduci"]').val();
+            var pozicia = $('#usersForm').find('input[name="pozicia"]').val();
+            // var veduci = true;
+            // console.log(title, subject, body);
+            // console.log('prevent default');
+            if(!kontrola(name) && !kontrola(email)  && !kontrola(veduci) && !kontrola(pozicia) )
+            {
+                console.log('presslo kontrolou jeje');   
+                $('#usersForm').get(0).submit();
+                // $('#todoForm').submit();
+                // podm = false;
+            } else 
+            {
+                console.log("nepreslo kontrolou :(");
+                var titleError = kontrola(name) ? "chyba ti name" : " ";
+                var subjectError = kontrola(email) ? "chyba ti email" : " ";
+                // var bodyError = kontrola(oddelenie) ? "chyba ti body" : " ";
+                var veduciError = kontrola(veduci) ? "chyba ti veduci" : " ";
+                var poziciaError = kontrola(pozicia) ? "chyba ti pozicia" : " ";
+                $('#titleError').html(titleError);
+                $('#subjectError').html(subjectError);
+                $('#veduciError').html(veduciError);
+                $('#poziciaError').html(poziciaError);
+                // $('#bodyError').html(bodyError);
+            }
+        })
+    });
+    function kontrola(data)
+    {
+        return data == undefined || data.length == 0;
+    }
+</script>
 </html>

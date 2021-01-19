@@ -4,7 +4,7 @@
     <a href="{{url('/todos')}}" class="btn btn-default">Naspat</a>
     <h1>Uprava todo</h1>
 
-    {!! Form::open(['action'=> ['TodosController@update', $todo->todo_id], 'method' => 'POST', 'id' => 'todoForm'])!!}
+    {!! Form::open(['action'=> ['TodosController@update', $todo->todo_id], 'method' => 'POST', 'id' => 'todoForm' ])!!}
         {{Form::label('title', 'Title', ['class' =>'label label-default'])}}
         {{Form::text('title',$todo->title,['class' => 'form-control'])}}
         <p class="text-danger" id='titleError'></p>

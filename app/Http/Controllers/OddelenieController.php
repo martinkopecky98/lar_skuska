@@ -35,11 +35,11 @@ class OddelenieController extends Controller
     public function create()
     {
         if (!Auth::check()) {
-            return redirect('/');
+            return redirect('/')->with('error', 'neprihlaseny user');
         }
         if(auth()->user()->pozicia == 'manazer' OR auth()->user()->pozicia == 'root')
         {return view('oddelenia.create');}
-        return redirect('/');
+        return redirect('/')->with('error', 'zamietnuty pristup');
     }
 
     /**
@@ -134,8 +134,23 @@ class OddelenieController extends Controller
      */
     public function update(Request $request, $id)
     {
+        // dd($request->);
+        // return redirect('/todos');
+        // dd($request->veduci);
+        if(!Auth()->check()){return redirect('/oddelenia')->with('error','neprihlaseny user'); }
+        if(auth()->user()->pozicia == 'root' OR auth()->user()->pozicia == 'manazer' )
+        {
+            $oddelenie = DB::select('select * from oddelenie where oddelenie_id = ?', [$id]);
+            // dd($oddelenie);
+            $user = DB::select('select * from users where id = ?', [$oddelenie[0]->veduci_id]);
+            // dd($user);
+            if(empty($user)){return redirect('/oddelenia')->with('error','taky user neexistuje'); }
+            // DB::update('update users set oddelenie_id =  where email = ?',[$oddelenie->veduci]);
+            DB::update('update oddelenie set veduci = ?, nazov = ? where oddelenie_id = ?', [$request->veduci, $request->nazov, $id]);
+            return redirect('/oddelenie')->with('success', 'oddelenie bolo zmenene');
+        }
+        return redirect('/oddelenie')->with('error','neopravneny pristup'); 
 
-        return redirect('/todos');
     }
 
     /**
